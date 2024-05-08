@@ -3,6 +3,7 @@ from functools import partial
 import threading
 import socket
 from tkinter import messagebox
+import pygame
 
 class Window(tk.Tk):
     def __init__(self):
@@ -13,6 +14,10 @@ class Window(tk.Tk):
         self.Threading_socket = Threading_socket(self)
         self.config(background="#fffacd")
         print(self.Threading_socket.name)
+        # Khởi tạo pygame để phát âm thanh
+        pygame.mixer.init()
+        pygame.mixer.music.load("assets/music_game.mp3")  # Load file nhạc
+        pygame.mixer.music.play(-1)  # Phát nhạc lặp lại vô hạn
 
     def showFrame(self):
         frame1 = tk.Frame(self)
@@ -51,6 +56,8 @@ class Window(tk.Tk):
                 self.Buts[x, y].config(background="#fffacd")  # Đặt màu nền cho nút bằng mã màu RGB
     
     def handleButton(self, x, y):
+        # Phát âm thanh khi click vào nút
+        pygame.mixer.Sound("assets/effect_click.wav").play()
         if self.Buts[x, y]['text'] == "": #Kiểm tra ô có ký tự rỗng hay không
             if self.memory.count([x, y]) == 0:
                 self.memory.append([x, y])
