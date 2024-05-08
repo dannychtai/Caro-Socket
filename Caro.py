@@ -11,6 +11,7 @@ class Window(tk.Tk):
         self.Buts = {}
         self.memory = []
         self.Threading_socket = Threading_socket(self)
+        self.config(background="#fffacd")
         print(self.Threading_socket.name)
 
     def showFrame(self):
@@ -18,26 +19,36 @@ class Window(tk.Tk):
         frame1.pack()
         frame2 = tk.Frame(self)
         frame2.pack()
+        frame1.config(background="#fffacd")  # Đặt màu nền cho frame
+        frame2.config(background="#fffacd")  # Đặt màu nền cho frame
 
         Undo = tk.Button(frame1, text="Undo", width=10,  # nút quay lại
                          command=partial(self.Undo, synchronized=True))
         Undo.grid(row=0, column=0, padx=30)
+        Undo.config(background="#fffacd")  # Đặt màu nền cho nút "Undo"
 
-        tk.Label(frame1, text="IP", pady=4).grid(row=0, column=1)
+        lbl_ip = tk.Label(frame1, text="IP", pady=4)  # Nhãn "IP"
+        lbl_ip.grid(row=0, column=1)
+        lbl_ip.config(background="#fffacd")  # Đặt màu nền cho nhãn "IP"
+
         inputIp = tk.Entry(frame1, width=20)  # Khung nhập địa chỉ ip
         inputIp.grid(row=0, column=2, padx=5)
         connectBT = tk.Button(frame1, text="Connect", width=10,
                               command=lambda: self.Threading_socket.clientAction(inputIp.get()))
         connectBT.grid(row=0, column=3, padx=3)
+        connectBT.config(background="#fffacd")  # Đặt màu nền cho nút "Connect"
 
         makeHostBT = tk.Button(frame1, text="MakeHost", width=10,  # nút tạo host
                                command=lambda: self.Threading_socket.serverAction())
         makeHostBT.grid(row=0, column=4, padx=30)
+        makeHostBT.config(background="#fffacd")  # Đặt màu nền cho nút "MakeHost"
+
         for x in range(Ox):   # tạo ma trận button Ox * Oy
             for y in range(Oy):
                 self.Buts[x, y] = tk.Button(frame2, font=('arial', 15, 'bold'), height=1, width=2,
                                             borderwidth=2, command=partial(self.handleButton, x=x, y=y))
                 self.Buts[x, y].grid(row=x, column=y)
+                self.Buts[x, y].config(background="#fffacd")  # Đặt màu nền cho nút bằng mã màu RGB
     
     def handleButton(self, x, y):
         if self.Buts[x, y]['text'] == "": #Kiểm tra ô có ký tự rỗng hay không
