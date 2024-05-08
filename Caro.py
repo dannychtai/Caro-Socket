@@ -56,6 +56,7 @@ class Window(tk.Tk):
                 self.memory.append([x, y])
             if len(self.memory) % 2 == 1:
                 self.Buts[x, y]['text'] = 'O'
+                self.Buts[x, y]['foreground'] = 'blue'  # Đặt màu xanh cho chữ 'O'
                 self.Threading_socket.sendData("{}|{}|{}|".format("hit", x, y))
                 if(self.checkWin(x, y, "O")):
                     self.notification("Winner", "O")
@@ -63,6 +64,7 @@ class Window(tk.Tk):
             else:
                 print(self.Threading_socket.name)
                 self.Buts[x, y]['text'] = 'X'
+                self.Buts[x, y]['foreground'] = 'red'  # Đặt màu đỏ cho chữ 'X'
                 self.Threading_socket.sendData("{}|{}|{}|".format("hit", x, y))
                 if(self.checkWin(x, y, "X")):
                     self.notification("Winner", "X")
