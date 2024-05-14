@@ -3,6 +3,8 @@ from functools import partial
 import threading
 import socket
 from tkinter import messagebox
+from PIL import Image, ImageTk  # Sử dụng PIL để xử lý hình ảnh
+import pygame
 
 class Window(tk.Tk):
     def __init__(self):
@@ -10,10 +12,18 @@ class Window(tk.Tk):
         self.title("Caro by Python")
         self.Buts = {}
         self.memory = []
-        self.Threading_socket = Threading_socket(self, self)  # Truyền self vào Threading_socket
+        self.Threading_socket = Threading_socket(self)
         self.config(background="#fffacd")
-        self.isHostCreated = False  # Biến cờ kiểm tra đã tạo host hay chưa
         print(self.Threading_socket.name)
+        # Khởi tạo pygame để phát âm thanh
+        pygame.mixer.init()
+        pygame.mixer.music.load("assets/music_game.mp3")  # Load file nhạc
+        pygame.mixer.music.play(-1)  # Phát nhạc lặp lại vô hạn
+        self.effect_volume = 1.0  # Âm lượng hiệu ứng âm thanh
+        self.music_volume = 1.0  # Âm lượng nhạc nền
+
+        # Tải hình ảnh biểu tượng bánh răng
+        self.settings_icon = ImageTk.PhotoImage(Image.open("assets/setting.png").resize((20, 20)))
 
     def showFrame(self):
         frame1 = tk.Frame(self)
@@ -23,25 +33,30 @@ class Window(tk.Tk):
         frame1.config(background="#fffacd")  # Đặt màu nền cho frame
         frame2.config(background="#fffacd")  # Đặt màu nền cho frame
 
+        # Nút Setting với hình ảnh biểu tượng bánh răng
+        setting_button = tk.Button(frame1, image=self.settings_icon, width=24, height=24, command=self.openSettings)
+        setting_button.grid(row=0, column=0, padx=10)
+        setting_button.config(background="#fffacd")  # Đặt màu nền cho nút "Setting"
+
         Undo = tk.Button(frame1, text="Undo", width=10,  # nút quay lại
                          command=partial(self.Undo, synchronized=True))
-        Undo.grid(row=0, column=0, padx=30)
+        Undo.grid(row=0, column=1, padx=10)
         Undo.config(background="#fffacd")  # Đặt màu nền cho nút "Undo"
 
         lbl_ip = tk.Label(frame1, text="IP", pady=4)  # Nhãn "IP"
-        lbl_ip.grid(row=0, column=1)
+        lbl_ip.grid(row=0, column=2)
         lbl_ip.config(background="#fffacd")  # Đặt màu nền cho nhãn "IP"
 
         inputIp = tk.Entry(frame1, width=20)  # Khung nhập địa chỉ ip
-        inputIp.grid(row=0, column=2, padx=5)
+        inputIp.grid(row=0, column=3, padx=5)
         connectBT = tk.Button(frame1, text="Connect", width=10,
                               command=lambda: self.Threading_socket.clientAction(inputIp.get()))
-        connectBT.grid(row=0, column=3, padx=3)
+        connectBT.grid(row=0, column=4, padx=3)
         connectBT.config(background="#fffacd")  # Đặt màu nền cho nút "Connect"
 
         makeHostBT = tk.Button(frame1, text="MakeHost", width=10,  # nút tạo host
                                command=lambda: self.Threading_socket.serverAction())
-        makeHostBT.grid(row=0, column=4, padx=30)
+        makeHostBT.grid(row=0, column=5, padx=30)
         makeHostBT.config(background="#fffacd")  # Đặt màu nền cho nút "MakeHost"
 
         for x in range(Ox):   # tạo ma trận button Ox * Oy
@@ -52,6 +67,10 @@ class Window(tk.Tk):
                 self.Buts[x, y].config(background="#fffacd")  # Đặt màu nền cho nút bằng mã màu RGB
     
     def handleButton(self, x, y):
+        # Phát âm thanh khi click vào nút
+        effect_sound = pygame.mixer.Sound("assets/effect_click.wav")
+        effect_sound.set_volume(self.effect_volume)
+        effect_sound.play()
         if self.Buts[x, y]['text'] == "": #Kiểm tra ô có ký tự rỗng hay không
             if self.memory.count([x, y]) == 0:
                 self.memory.append([x, y])
@@ -70,6 +89,29 @@ class Window(tk.Tk):
                 if(self.checkWin(x, y, "X")):
                     self.notification("Winner", "X")
                     self.newGame()
+
+    def openSettings(self):
+        settings_window = tk.Toplevel(self)
+        settings_window.title("Settings")
+
+        tk.Label(settings_window, text="Music Volume").pack()
+        music_volume_slider = tk.Scale(settings_window, from_=0, to=1, resolution=0.1, orient="horizontal",
+                                       command=self.setMusicVolume)
+        music_volume_slider.set(self.music_volume)
+        music_volume_slider.pack()
+
+        tk.Label(settings_window, text="Effect Volume").pack()
+        effect_volume_slider = tk.Scale(settings_window, from_=0, to=1, resolution=0.1, orient="horizontal",
+                                        command=self.setEffectVolume)
+        effect_volume_slider.set(self.effect_volume)
+        effect_volume_slider.pack()
+
+    def setMusicVolume(self, volume):
+        self.music_volume = float(volume)
+        pygame.mixer.music.set_volume(self.music_volume)
+
+    def setEffectVolume(self, volume):
+        self.effect_volume = float(volume)
 
     def notification(self, title, msg):
         messagebox.showinfo(str(title), str(msg))
@@ -147,14 +189,12 @@ class Window(tk.Tk):
                 self.Buts[x, y]["text"] = ""
 
 class Threading_socket():
-    def __init__(self, gui, window):  # Thêm window vào constructor
+    def __init__(self, gui):
         super().__init__()
         self.dataReceive = ""
         self.conn = None
         self.gui = gui
-        self.window = window  # Lưu tham chiếu đến window
         self.name = ""
-        self.isHostCreated = window.isHostCreated  # Truy cập isHostCreated từ window
 
     def clientAction(self, inputIP):
         self.name = "client"
@@ -186,19 +226,18 @@ class Threading_socket():
             self.dataReceive = ""
 
     def serverAction(self):
-        if not self.isHostCreated:  # Kiểm tra nếu chưa tạo host
-            self.name = "server"
-            HOST = socket.gethostbyname(socket.gethostname())  # Lấy địa chỉ IP
-            print("Make host.........." + HOST)
-            self.notification("Gui IP chp ban", str(HOST))
-            PORT = 8000  # Thiết lập port lắng nghe
-            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            s.bind((HOST, PORT))
-            s.listen(1)
-            self.conn, addr = s.accept()
-            t2 = threading.Thread(target=self.server, args=(addr, s))
-            t2.start()
-            self.isHostCreated = True  # Đặt biến cờ thành True sau khi tạo host
+        self.name = "server"
+        HOST = socket.gethostbyname(socket.gethostname())  # Láy  lập địa chỉ
+        print("Make host.........." + HOST)
+        self.gui.notification("Gui IP chp ban", str(HOST))
+        PORT = 8000  # Thiết lập port lắng nghe
+        # cấu hình kết nối
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.bind((HOST, PORT))  # lắng nghe
+        s.listen(1)  # thiết lập tối ta 1 kết nối đồng thời
+        self.conn, addr = s.accept()  # chấp nhận kết nối và trả về thông số
+        t2 = threading.Thread(target=self.server, args=(addr, s))
+        t2.start()
 
     def server(self, addr, s):
         try:
