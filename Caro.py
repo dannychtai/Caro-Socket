@@ -13,7 +13,7 @@ class Window(tk.Tk):
         self.Buts = {}
         self.memory = []
         self.Threading_socket = Threading_socket(self)
-        self.config(background="#fffacd")
+        self.config(background="#DAA520")
         print(self.Threading_socket.name)
         # Khởi tạo pygame để phát âm thanh
         pygame.mixer.init()
@@ -25,14 +25,17 @@ class Window(tk.Tk):
         # Tải hình ảnh biểu tượng bánh răng
         self.settings_icon = ImageTk.PhotoImage(Image.open("assets/setting.png").resize((20, 20)))
 
+        # Tải hình ảnh biểu tượng gửi tin nhắn
+        self.send_icon = ImageTk.PhotoImage(Image.open("assets/send_icon.png").resize((15, 15)))
+
     def showFrame(self):
-        frame1 = tk.Frame(self, background="#fffacd")
+        frame1 = tk.Frame(self, background="#DAA520")
         frame1.grid(row=0, column=0, sticky='nsew')
 
-        frame2 = tk.Frame(self, background="#fffacd")
+        frame2 = tk.Frame(self, background="#DAA520")
         frame2.grid(row=1, column=0, sticky='nsew')
 
-        frame3 = tk.Frame(self, background="#fffacd")
+        frame3 = tk.Frame(self, background="#DAA520")
         frame3.grid(row=1, column=1, sticky='nsew')
 
         self.grid_columnconfigure(0, weight=1)
@@ -43,28 +46,29 @@ class Window(tk.Tk):
         # Nút Setting với hình ảnh biểu tượng bánh răng
         setting_button = tk.Button(frame1, image=self.settings_icon, width=24, height=24, command=self.openSettings)
         setting_button.grid(row=0, column=0, padx=10)
-        setting_button.config(background="#fffacd")  # Đặt màu nền cho nút "Setting"
+        setting_button.config(background="#006400")  # Đặt màu nền cho nút "Setting"
 
         Undo = tk.Button(frame1, text="Undo", width=10,  # nút quay lại
-                         command=partial(self.Undo, synchronized=True))
+                         command=partial(self.Undo, synchronized=True), font=("Cutie Pie", 11, "bold"), foreground="white")
         Undo.grid(row=0, column=1, padx=10)
-        Undo.config(background="#fffacd")  # Đặt màu nền cho nút "Undo"
+        Undo.config(background="#006400")  # Đặt màu nền cho nút "Undo"
 
-        lbl_ip = tk.Label(frame1, text="IP", pady=4)  # Nhãn "IP"
+        lbl_ip = tk.Label(frame1, text="IP", pady=4, font=("Cutie Pie", 11, "bold"), foreground="#006400")  # Nhãn "IP"
         lbl_ip.grid(row=0, column=2)
-        lbl_ip.config(background="#fffacd")  # Đặt màu nền cho nhãn "IP"
+        lbl_ip.config(background="#DAA520")  # Đặt màu nền cho nhãn "IP"
 
-        inputIp = tk.Entry(frame1, width=20)  # Khung nhập địa chỉ ip
+        inputIp = tk.Entry(frame1, width=20, highlightbackground="#006400", highlightthickness=2)  # Khung nhập địa chỉ ip với viền màu xanh
         inputIp.grid(row=0, column=3, padx=5)
+
         connectBT = tk.Button(frame1, text="Connect", width=10,
-                              command=lambda: self.Threading_socket.clientAction(inputIp.get()))
+                              command=lambda: self.Threading_socket.clientAction(inputIp.get()), font=("Cutie Pie", 11, "bold"), foreground="white")
         connectBT.grid(row=0, column=4, padx=3)
-        connectBT.config(background="#00ff7f")  # Đặt màu nền cho nút "Connect"
+        connectBT.config(background="#006400")  # Đặt màu nền cho nút "Connect"
 
         makeHostBT = tk.Button(frame1, text="MakeHost", width=10,  # nút tạo host
-                               command=lambda: self.Threading_socket.serverAction())
+                               command=lambda: self.Threading_socket.serverAction(), font=("Cutie Pie", 11, "bold"), foreground="white")
         makeHostBT.grid(row=0, column=5, padx=30)
-        makeHostBT.config(background="#00ff7f")  # Đặt màu nền cho nút "MakeHost"
+        makeHostBT.config(background="#006400")  # Đặt màu nền cho nút "MakeHost"
 
         for x in range(Ox):   # tạo ma trận button Ox * Oy
             for y in range(Oy):
@@ -73,15 +77,21 @@ class Window(tk.Tk):
                 self.Buts[x, y].grid(row=x, column=y)
                 self.Buts[x, y].config(background="#fffacd")  # Đặt màu nền cho nút bằng mã màu RGB
 
+        # Tải logo game
+        self.logo = ImageTk.PhotoImage(Image.open("assets/caro_logo2.png").resize((450, 450)))  # Đảm bảo đã có file logo.png
+        logo_label = tk.Label(frame3, image=self.logo, background="#DAA520")
+        logo_label.grid(row=0, column=0, columnspan=2, pady=10)
+
         # Thêm khung chat
         self.chat_display = tk.Text(frame3, height=15, width=50, state=tk.DISABLED, wrap=tk.WORD)
-        self.chat_display.grid(row=0, column=0, padx=5, pady=5)
+        self.chat_display.grid(row=1, column=0, padx=5, pady=5, columnspan=2)
 
-        self.chat_entry = tk.Entry(frame3, width=40)
-        self.chat_entry.grid(row=1, column=0, padx=5, pady=5)
+        self.chat_entry = tk.Entry(frame3, width=50)  # Đặt độ rộng là 50
+        self.chat_entry.grid(row=2, column=0, padx=0, pady=0)
 
-        send_button = tk.Button(frame3, text="Send", width=10, command=self.sendMessage)
-        send_button.grid(row=1, column=1, padx=5, pady=5)
+        send_button = tk.Button(frame3, image=self.send_icon, width=24, height=24, command=self.sendMessage)
+        send_button.grid(row=2, column=1, padx=0, pady=0)  # Đặt padx và pady thành 5 hoặc một giá trị nhỏ hơn
+        send_button.config(background="#006400")  # Đặt màu nền cho nút "send"
 
     def sendMessage(self):
         message = self.chat_entry.get()
@@ -123,18 +133,31 @@ class Window(tk.Tk):
     def openSettings(self):
         settings_window = tk.Toplevel(self)
         settings_window.title("Settings")
+        settings_window.config(background="#DAA520")
 
-        tk.Label(settings_window, text="Music Volume").pack()
-        music_volume_slider = tk.Scale(settings_window, from_=0, to=1, resolution=0.1, orient="horizontal",
-                                       command=self.setMusicVolume)
+        music_frame = tk.Frame(settings_window, background="#DAA520")
+        music_frame.pack(pady=10)
+
+        tk.Label(music_frame, text="Music Volume", background="#DAA520", font=("Arial", 12)).pack(side=tk.LEFT, padx=5)
+        music_volume_slider = tk.Scale(music_frame, from_=0, to=1, resolution=0.1, orient="horizontal", command=self.setMusicVolume,
+                                    troughcolor="#0000FF")  # Màu xanh dương
         music_volume_slider.set(self.music_volume)
-        music_volume_slider.pack()
+        music_volume_slider.pack(side=tk.LEFT, padx=5)
 
-        tk.Label(settings_window, text="Effect Volume").pack()
-        effect_volume_slider = tk.Scale(settings_window, from_=0, to=1, resolution=0.1, orient="horizontal",
-                                        command=self.setEffectVolume)
+        effect_frame = tk.Frame(settings_window, background="#DAA520")
+        effect_frame.pack(pady=10)
+
+        tk.Label(effect_frame, text="Effect Volume", background="#DAA520", font=("Arial", 12)).pack(side=tk.LEFT, padx=5)
+        effect_volume_slider = tk.Scale(effect_frame, from_=0, to=1, resolution=0.1, orient="horizontal", command=self.setEffectVolume,
+                                        troughcolor="#0000FF")  # Màu xanh dương
         effect_volume_slider.set(self.effect_volume)
-        effect_volume_slider.pack()
+        effect_volume_slider.pack(side=tk.LEFT, padx=5)
+
+        close_button = tk.Button(settings_window, text="Close", command=settings_window.destroy, font=("Cutie Pie", 11, "bold"), foreground="white")
+        close_button.pack(pady=10)
+        close_button.config(background="#ff0000")  # Đặt màu nền cho nút "close"
+
+
 
     def setMusicVolume(self, volume):
         self.music_volume = float(volume)
