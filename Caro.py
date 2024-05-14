@@ -26,12 +26,19 @@ class Window(tk.Tk):
         self.settings_icon = ImageTk.PhotoImage(Image.open("assets/setting.png").resize((20, 20)))
 
     def showFrame(self):
-        frame1 = tk.Frame(self)
-        frame1.pack()
-        frame2 = tk.Frame(self)
-        frame2.pack()
-        frame1.config(background="#fffacd")  # Đặt màu nền cho frame
-        frame2.config(background="#fffacd")  # Đặt màu nền cho frame
+        frame1 = tk.Frame(self, background="#fffacd")
+        frame1.grid(row=0, column=0, sticky='nsew')
+
+        frame2 = tk.Frame(self, background="#fffacd")
+        frame2.grid(row=1, column=0, sticky='nsew')
+
+        frame3 = tk.Frame(self, background="#fffacd")
+        frame3.grid(row=1, column=1, sticky='nsew')
+
+        self.grid_columnconfigure(0, weight=1)
+        self.grid_rowconfigure(0, weight=0)
+        self.grid_rowconfigure(1, weight=1)
+        self.grid_columnconfigure(1, weight=1)
 
         # Nút Setting với hình ảnh biểu tượng bánh răng
         setting_button = tk.Button(frame1, image=self.settings_icon, width=24, height=24, command=self.openSettings)
@@ -52,12 +59,12 @@ class Window(tk.Tk):
         connectBT = tk.Button(frame1, text="Connect", width=10,
                               command=lambda: self.Threading_socket.clientAction(inputIp.get()))
         connectBT.grid(row=0, column=4, padx=3)
-        connectBT.config(background="#fffacd")  # Đặt màu nền cho nút "Connect"
+        connectBT.config(background="#00ff7f")  # Đặt màu nền cho nút "Connect"
 
         makeHostBT = tk.Button(frame1, text="MakeHost", width=10,  # nút tạo host
                                command=lambda: self.Threading_socket.serverAction())
         makeHostBT.grid(row=0, column=5, padx=30)
-        makeHostBT.config(background="#fffacd")  # Đặt màu nền cho nút "MakeHost"
+        makeHostBT.config(background="#00ff7f")  # Đặt màu nền cho nút "MakeHost"
 
         for x in range(Ox):   # tạo ma trận button Ox * Oy
             for y in range(Oy):
@@ -65,7 +72,30 @@ class Window(tk.Tk):
                                             borderwidth=2, command=partial(self.handleButton, x=x, y=y))
                 self.Buts[x, y].grid(row=x, column=y)
                 self.Buts[x, y].config(background="#fffacd")  # Đặt màu nền cho nút bằng mã màu RGB
-    
+
+        # Thêm khung chat
+        self.chat_display = tk.Text(frame3, height=15, width=50, state=tk.DISABLED, wrap=tk.WORD)
+        self.chat_display.grid(row=0, column=0, padx=5, pady=5)
+
+        self.chat_entry = tk.Entry(frame3, width=40)
+        self.chat_entry.grid(row=1, column=0, padx=5, pady=5)
+
+        send_button = tk.Button(frame3, text="Send", width=10, command=self.sendMessage)
+        send_button.grid(row=1, column=1, padx=5, pady=5)
+
+    def sendMessage(self):
+        message = self.chat_entry.get()
+        if message:
+            self.displayMessage("You: " + message)
+            self.Threading_socket.sendData("message|{}".format(message))
+            self.chat_entry.delete(0, tk.END)
+
+    def displayMessage(self, message):
+        self.chat_display.config(state=tk.NORMAL)
+        self.chat_display.insert(tk.END, message + "\n")
+        self.chat_display.config(state=tk.DISABLED)
+        self.chat_display.yview(tk.END)
+
     def handleButton(self, x, y):
         # Phát âm thanh khi click vào nút
         effect_sound = pygame.mixer.Sound("assets/effect_click.wav")
@@ -157,7 +187,7 @@ class Window(tk.Tk):
         # check cheo trai
         count = 0
         i, j = x, y
-        while(i < Ox and j < Oy and self.Buts[i, j]["text"] == XO):
+        while(i < Oy and j < Ox and self.Buts[i, j]["text"] == XO):
             count += 1
             i += 1
             j += 1
@@ -221,13 +251,15 @@ class Threading_socket():
                     y = int(self.dataReceive.split("|")[3])
                     self.gui.handleButton(x, y)
                 if(action == "Undo" and friend == "server"):
-
                     self.gui.Undo(False)
+                if(action == "message" and friend == "server"):
+                    message = self.dataReceive.split("|")[2]
+                    self.gui.displayMessage("Friend: " + message)
             self.dataReceive = ""
 
     def serverAction(self):
         self.name = "server"
-        HOST = socket.gethostbyname(socket.gethostname())  # Láy  lập địa chỉ
+        HOST = socket.gethostbyname(socket.gethostname())  # Lấy địa chỉ
         print("Make host.........." + HOST)
         self.gui.notification("Gui IP chp ban", str(HOST))
         PORT = 8000  # Thiết lập port lắng nghe
@@ -256,6 +288,9 @@ class Threading_socket():
                         self.gui.handleButton(x, y)
                     if(action == "Undo" and friend == "client"):
                         self.gui.Undo(False)
+                    if(action == "message" and friend == "client"):
+                        message = self.dataReceive.split("|")[2]
+                        self.gui.displayMessage("Friend: " + message)
                 self.dataReceive = ""
         finally:
             s.close()  # đóng socket
