@@ -13,7 +13,7 @@ class Window(tk.Tk):
         self.Buts = {}
         self.memory = []
         self.Threading_socket = Threading_socket(self)
-        self.config(background="#DAA520")
+        self.config(background="#BDB76B")
         print(self.Threading_socket.name)
         # Khởi tạo pygame để phát âm thanh
         pygame.mixer.init()
@@ -29,13 +29,13 @@ class Window(tk.Tk):
         self.send_icon = ImageTk.PhotoImage(Image.open("assets/send_icon.png").resize((15, 15)))
 
     def showFrame(self):
-        frame1 = tk.Frame(self, background="#DAA520")
+        frame1 = tk.Frame(self, background="#BDB76B")
         frame1.grid(row=0, column=0, sticky='nsew')
 
-        frame2 = tk.Frame(self, background="#DAA520")
+        frame2 = tk.Frame(self, background="#BDB76B")
         frame2.grid(row=1, column=0, sticky='nsew')
 
-        frame3 = tk.Frame(self, background="#DAA520")
+        frame3 = tk.Frame(self, background="#BDB76B")
         frame3.grid(row=1, column=1, sticky='nsew')
 
         self.grid_columnconfigure(0, weight=1)
@@ -55,7 +55,7 @@ class Window(tk.Tk):
 
         lbl_ip = tk.Label(frame1, text="IP", pady=4, font=("Cutie Pie", 11, "bold"), foreground="#006400")  # Nhãn "IP"
         lbl_ip.grid(row=0, column=2)
-        lbl_ip.config(background="#DAA520")  # Đặt màu nền cho nhãn "IP"
+        lbl_ip.config(background="#BDB76B")  # Đặt màu nền cho nhãn "IP"
 
         inputIp = tk.Entry(frame1, width=20, highlightbackground="#006400", highlightthickness=2)  # Khung nhập địa chỉ ip với viền màu xanh
         inputIp.grid(row=0, column=3, padx=5)
@@ -79,7 +79,7 @@ class Window(tk.Tk):
 
         # Tải logo game
         self.logo = ImageTk.PhotoImage(Image.open("assets/caro_logo2.png").resize((450, 450)))  # Đảm bảo đã có file logo.png
-        logo_label = tk.Label(frame3, image=self.logo, background="#DAA520")
+        logo_label = tk.Label(frame3, image=self.logo, background="#BDB76B")
         logo_label.grid(row=0, column=0, columnspan=2, pady=10)
 
         # Thêm khung chat
@@ -133,23 +133,23 @@ class Window(tk.Tk):
     def openSettings(self):
         settings_window = tk.Toplevel(self)
         settings_window.title("Settings")
-        settings_window.config(background="#DAA520")
+        settings_window.config(background="#BDB76B")
 
-        music_frame = tk.Frame(settings_window, background="#DAA520")
+        music_frame = tk.Frame(settings_window, background="#BDB76B")
         music_frame.pack(pady=10)
 
-        tk.Label(music_frame, text="Music Volume", background="#DAA520", font=("Arial", 12)).pack(side=tk.LEFT, padx=5)
+        tk.Label(music_frame, text="Music Volume", background="#BDB76B", font=("Arial", 12)).pack(side=tk.LEFT, padx=5)
         music_volume_slider = tk.Scale(music_frame, from_=0, to=1, resolution=0.1, orient="horizontal", command=self.setMusicVolume,
-                                    troughcolor="#0000FF")  # Màu xanh dương
+                                        troughcolor="#0000FF", sliderrelief='flat')
         music_volume_slider.set(self.music_volume)
         music_volume_slider.pack(side=tk.LEFT, padx=5)
 
-        effect_frame = tk.Frame(settings_window, background="#DAA520")
+        effect_frame = tk.Frame(settings_window, background="#BDB76B")
         effect_frame.pack(pady=10)
 
-        tk.Label(effect_frame, text="Effect Volume", background="#DAA520", font=("Arial", 12)).pack(side=tk.LEFT, padx=5)
+        tk.Label(effect_frame, text="Effect Volume", background="#BDB76B", font=("Arial", 12)).pack(side=tk.LEFT, padx=5)
         effect_volume_slider = tk.Scale(effect_frame, from_=0, to=1, resolution=0.1, orient="horizontal", command=self.setEffectVolume,
-                                        troughcolor="#0000FF")  # Màu xanh dương
+                                        troughcolor="#0000FF", sliderrelief='flat')  # Màu xanh dương
         effect_volume_slider.set(self.effect_volume)
         effect_volume_slider.pack(side=tk.LEFT, padx=5)
 

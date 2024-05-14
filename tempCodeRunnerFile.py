@@ -1,1 +1,2 @@
-fffacd
+        music_volume_slider = tk.Scale(music_frame, from_=0, to=1, resolution=0.1, orient="horizontal", command=self.setMusicVolume,
+                                        troughcolor="#0000FF", sliderrelief='flat')
