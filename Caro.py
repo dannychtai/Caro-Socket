@@ -88,10 +88,16 @@ class Window(tk.Tk):
 
         self.chat_entry = tk.Entry(frame3, width=50)  # Đặt độ rộng là 50
         self.chat_entry.grid(row=2, column=0, padx=0, pady=0)
+        self.chat_entry.bind("<KeyPress>", self.onKeyPress)  # Gán hàm xử lý sự kiện bấm phím
+
 
         send_button = tk.Button(frame3, image=self.send_icon, width=24, height=24, command=self.sendMessage)
         send_button.grid(row=2, column=1, padx=0, pady=0)  # Đặt padx và pady thành 5 hoặc một giá trị nhỏ hơn
         send_button.config(background="#006400")  # Đặt màu nền cho nút "send"
+
+    def onKeyPress(self, event):
+        if event.keysym == "Return":
+            self.sendMessage()
 
     def sendMessage(self):
         message = self.chat_entry.get()
