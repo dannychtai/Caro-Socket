@@ -40,7 +40,9 @@ The Python interpreter and the extensive standard library are freely available i
 1. Open visual code studio or similar editor -> open game folder -> select caro.py file -> run file
  
 2. Select the makehost button to create a room and get the machine's IP address.
+   
    ![image](https://github.com/dannychtai/Caro-Socket/assets/133089031/fef99825-6c40-4be9-af17-7710b0e319d8)
 3. Enter the IP address of the other device and press the connect button.
+   
    ![image](https://github.com/dannychtai/Caro-Socket/assets/133089031/237bbcb8-805a-4627-ba28-5d793eeb7647)
 
