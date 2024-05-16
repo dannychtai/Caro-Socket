@@ -9,7 +9,7 @@ import pygame
 class Window(tk.Tk):
     def __init__(self):
         super().__init__()
-        self.title("Caro by Python")
+        self.title("Caro Online!!!")
         self.Buts = {}
         self.memory = []
         self.Threading_socket = Threading_socket(self)
@@ -290,7 +290,7 @@ class Threading_socket():
         self.name = "server"
         HOST = socket.gethostbyname(socket.gethostname())  # Lấy địa chỉ
         print("Make host.........." + HOST)
-        self.gui.notification("Gui IP chp ban", str(HOST))
+        self.gui.notification("Gui IP cho ban", str(HOST))
         PORT = 8000  # Thiết lập port lắng nghe
         # cấu hình kết nối
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
