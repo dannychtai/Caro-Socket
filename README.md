@@ -46,3 +46,4 @@ The Python interpreter and the extensive standard library are freely available i
    
    ![image](https://github.com/dannychtai/Caro-Socket/assets/133089031/237bbcb8-805a-4627-ba28-5d793eeb7647)
 
+## Step 5: Enjoy the game together with your friends :))
